@@ -12,15 +12,17 @@ import (
 	"os"
 )
 
-type plugin struct{
-	dir string
-}
+type plugin string
 
 // Anything that can be unmarshalled into a generic JSON map
 type spec map[string]interface{}
 
 type fileInstance struct {
 	instance.Spec
+}
+
+func (f plugin) getDir()(string)  {
+	 return os.Getenv("KADENDE_FILE_PROVIDER_DIR")
 }
 
 func (f plugin) Validate(req *types.Any) error {
@@ -42,7 +44,7 @@ func (f plugin) Provision(spec instance.Spec) (*instance.ID, error) {
 		return nil, err
 	}
 
-	err = ioutil.WriteFile(path.Join(f.dir, string(fileId)), specString.Bytes(), 0644)
+	err = ioutil.WriteFile(path.Join(f.getDir(), string(fileId)), specString.Bytes(), 0644)
 
 	if err != nil{
 		return nil, err
@@ -52,7 +54,7 @@ func (f plugin) Provision(spec instance.Spec) (*instance.ID, error) {
 
 func (f plugin) Label(id instance.ID, labels map[string]string) (err error) {
 	// read file content
-	data, err := ioutil.ReadFile(path.Join(f.dir, string(id)))
+	data, err := ioutil.ReadFile(path.Join(f.getDir(), string(id)))
 	if err != nil{
 		return
 	}
@@ -66,18 +68,18 @@ func (f plugin) Label(id instance.ID, labels map[string]string) (err error) {
 	if err != nil {
 		return
 	}
-	err = ioutil.WriteFile(path.Join(f.dir, string(id)), specString.Bytes(), 0644)
+	err = ioutil.WriteFile(path.Join(f.getDir(), string(id)), specString.Bytes(), 0644)
 	return
 }
 
 func (f plugin) Destroy(id instance.ID, context instance.Context) (err error) {
-	err = os.Remove(path.Join(f.dir, string(id)))
+	err = os.Remove(path.Join(f.getDir(), string(id)))
 	return
 }
 
 func (f plugin) DescribeInstances(labels map[string]string, properties bool) (instances []instance.Description, err error)  {
 	instances = []instance.Description{}
-	err = filepath.Walk(f.dir, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(f.getDir(), func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir(){
 			// read file content
 			data, err := ioutil.ReadFile(path)
@@ -110,7 +112,4 @@ func (f plugin) DescribeInstances(labels map[string]string, properties bool) (in
 	return
 }
 
-
-func NewPlugin(dir string) instance.Plugin {
-	return plugin{dir: dir}
-}
+var Plugin plugin

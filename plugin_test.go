@@ -24,10 +24,10 @@ func TestUsage(t *testing.T) {
 func run(t *testing.T, properties string) {
 	dir, err := ioutil.TempDir(".", "kadende-instance-file")
 	require.NoError(t, err)
-
 	defer os.RemoveAll(dir)
 
-	fileinst := NewPlugin(dir)
+	os.Setenv("KADENDE_FILE_PROVIDER_DIR", dir)
+	fileinst := Plugin
 
 	config := types.AnyString(properties)
 

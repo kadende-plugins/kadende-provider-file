@@ -1,0 +1,8 @@
+version: "3.4"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/go/src/github.com/kadende-plugins/kadende-provider-file

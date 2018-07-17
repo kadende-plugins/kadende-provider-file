@@ -20,16 +20,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/kadende/kadende-interfaces"
-  packages = [
-    "pkg/types",
-    "spi",
-    "spi/instance"
-  ]
-  revision = "9024563776af3cea0f72848e0577d9a5bfd81d46"
-
-[[projects]]
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
